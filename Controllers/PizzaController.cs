@@ -2,25 +2,28 @@ using demo_asp_net.Models;
 using demo_asp_net.Services;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace demo_asp_net.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
 public class PizzaController : ControllerBase
 {
+    private PizzaService pizzaService;
     public PizzaController()
     {
+        this.pizzaService =  new PizzaService();
     }
 
     // GET all action
     [HttpGet]
-    public ActionResult<List<Pizza>> GetAll() => PizzaService.GetAll();
+    public ActionResult<List<Pizza>> GetAll() => pizzaService.GetAll();
 
     // GET by Id action
     [HttpGet("{id}")]
-    public ActionResult<Pizza> Get(int id)
+    public ActionResult<Pizza> get(int id)
     {
-        var pizza = PizzaService.Get(id);
+        var pizza = pizzaService.getPizzaById(id);
 
         if (pizza == null)
             return NotFound();
@@ -33,37 +36,7 @@ public class PizzaController : ControllerBase
     public IActionResult Create(Pizza pizza)
     {
         // This code will save the pizza and return a result
-        PizzaService.Add(pizza);
+        pizzaService.addPizza(pizza);
         return CreatedAtAction(nameof(Create), new { id = pizza.Id }, pizza);
-    }
-
-    // PUT action
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, Pizza pizza)
-    {
-        if (id != pizza.Id)
-            return BadRequest();
-
-        var existingPizza = PizzaService.Get(id);
-        if (existingPizza is null)
-            return NotFound();
-
-        PizzaService.Update(pizza);
-
-        return NoContent();
-    }
-
-    // DELETE action
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        var pizza = PizzaService.Get(id);
-
-        if (pizza is null)
-            return NotFound();
-
-        PizzaService.Delete(id);
-
-        return NoContent();
-    }
+    } 
 }
